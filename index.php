@@ -31,7 +31,7 @@ $user_name = 'Александр Самойлов'; // укажите здесь
         <!-- здесь должен быть PHP код для показа имени пользователя -->
         <?php if($is_auth): ?>
             <div class="user-menu__logged">
-                <p><?=$user_name;?></p>
+                <p><?=htmlspecialchars($user_name); ?></p>
             </div>
         <?php else: ?>
             <ul class="user-menu__list">
