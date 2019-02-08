@@ -2,6 +2,7 @@
 require_once 'functions.php';
 
 $is_auth = rand(0, 1);
+$time_left = time_to_midnight();
 $title = 'Главная';
 $user_name = 'Александр Самойлов'; // укажите здесь ваше имя
 $categories = ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'];
@@ -45,7 +46,8 @@ $ads = [
 ];
 $main_content = include_template('index.php', [
     'categories' => $categories,
-    'ads' => $ads
+    'ads' => $ads,
+    'time_left' => $time_left
 ]);
 $layout = include_template('layout.php', [
     'title' => $title,
