@@ -1,13 +1,22 @@
 <?php
 date_default_timezone_set("Europe/Moscow");
 
-function format_price ($price) {
+/**
+ * @param $price
+ * @return string
+ */
+function formatPrice ($price) {
     $number = ceil($price);
     $number = number_format($number, 0, ',', ' ');
     return $number . ' ₽';
 }
 
-function include_template($name, $data) {
+/**
+ * @param $name
+ * @param $data
+ * @return false|string
+ */
+function includeTemplate($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
 
@@ -23,9 +32,12 @@ function include_template($name, $data) {
     return $result;
 }
 
-function time_to_midnight() {
+/**
+ * @param $date
+ * @return false|int
+ */
+function getSecondsForMidnight($date) {
     $midnight = strtotime('tomorrow midnight');
-    $current_time = strtotime('now');
-    $time_left = $midnight - $current_time;
-    return gmdate('H:i', $time_left);
+    $time_left = $midnight - $date;
+    return $time_left;
 }
