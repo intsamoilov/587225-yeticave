@@ -6,8 +6,8 @@ use yeticave;
 
 create table categories
 (
-    id   int auto_increment primary key,
-    name varchar(50) not null
+    id   int unsigned auto_increment primary key,
+    name varchar(50) not null unique
 );
 
 create table lots
@@ -38,7 +38,7 @@ create table users
 (
     id       int unsigned auto_increment primary key,
     reg_date timestamp   not null default current_timestamp,
-    email    varchar(50) not null,
+    email    varchar(50) not null unique,
     name     varchar(50) not null,
     password varchar(30) not null,
     avatar   varchar(200),
