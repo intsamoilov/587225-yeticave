@@ -41,7 +41,7 @@ where l.winner_id is null
 order by l.date desc;
 
 -- показать лот по его id. Получите также название категории, к которой принадлежит лот
-select l.name, l.description, g.name, l.price
+select l.name, l.description, g.name as category_name, l.price
 from lots l
 		 join categories g on g.id = l.category_id
 where l.id = 4;
@@ -54,7 +54,7 @@ where id = 4;
 -- получить список самых свежих ставок для лота по его идентификатору
 select bets.bid, bets.date
 from bets
-where bets.id = 1
+where bets.lot_id = 1
 order by bets.date desc;
 
 
