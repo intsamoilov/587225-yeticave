@@ -47,7 +47,7 @@ function setDBConnection($config) {
     );
     mysqli_set_charset($con, "utf8");
     if (!$con) {
-        print("Ошибка подключения: " . mysqli_connect_error());
+        exit("Ошибка подключения: " . mysqli_connect_error());
     }
     return $con;
 }
