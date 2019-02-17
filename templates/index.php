@@ -5,7 +5,7 @@
         <!--заполните этот список из массива категорий-->
         <?php foreach($categories as $value):?>
         <li class="promo__item promo__item--boards">
-            <a class="promo__link" href="pages/all-lots.html"><?=htmlspecialchars($value);?></a>
+            <a class="promo__link" href="pages/all-lots.html"><?=htmlspecialchars($value['name']);?></a>
         </li>
         <?php endforeach;?>
     </ul>
@@ -32,7 +32,7 @@
                         <span class="lot__cost"><?=formatPrice($value['price']);?></span>
                     </div>
                     <div class="lot__timer timer">
-                        <?=$time_left;?>
+                        <?=getRemainingTime($value['date_end']);?>
                     </div>
                 </div>
             </div>
