@@ -64,10 +64,10 @@ function getRemainingTime($date_end) {
 
 /**
  * @param $db
- * @param $categories
  * @return array|null
  */
-function getCategoriesFromDB($db, $categories) {
+function getCategoriesFromDB($db) {
+    $categories = [];
     $sql = 'select name'
         . ' from categories'
         . ' order by id';
@@ -82,10 +82,10 @@ function getCategoriesFromDB($db, $categories) {
 
 /**
  * @param $db
- * @param $ads
  * @return array|null
  */
-function getAdsFromDB($db, $ads) {
+function getAdsFromDB($db) {
+    $ads = [];
     $sql = 'select l.name as title, l.image as url, l.price, l.date_end, g.name as category'
         . ' from lots l'
         . ' left join categories g on l.category_id = g.id'

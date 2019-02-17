@@ -4,8 +4,8 @@ require_once 'data.php';
 
 $db = setDBConnection($db_config);
 if($db) {
-    $categories = getCategoriesFromDB($db, $categories);
-    $ads = getAdsFromDB($db, $ads);
+    $categories = getCategoriesFromDB($db);
+    $ads = getAdsFromDB($db);
 }
 
 $main_content = includeTemplate('index.php', [
