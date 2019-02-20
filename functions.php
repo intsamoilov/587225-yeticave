@@ -1,4 +1,5 @@
 <?php
+require_once 'mysql_helper.php';
 date_default_timezone_set("Europe/Moscow");
 
 /**
@@ -36,7 +37,7 @@ function includeTemplate($name, $data) {
  * @param $config
  * @return mysqli
  */
-function setDBConnection($config) {
+function getDBConnection($config) {
     $con = mysqli_init();
     mysqli_options($con, MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
     mysqli_real_connect($con,
@@ -46,9 +47,6 @@ function setDBConnection($config) {
         $config['db_name']
     );
     mysqli_set_charset($con, "utf8");
-    if (!$con) {
-        exit("Ошибка подключения: " . mysqli_connect_error());
-    }
     return $con;
 }
 
@@ -84,18 +82,37 @@ function getCategoriesFromDB($db) {
  * @param $db
  * @return array|null
  */
-function getAdsFromDB($db) {
-    $ads = [];
-    $sql = 'select l.name as title, l.image as url, l.price, l.date_end, g.name as category'
+function getLotsFromDB($db) {
+    $lots = [];
+    $sql = 'select l.id, l.name as title, l.image as url, l.price, l.date_end, g.name as category'
         . ' from lots l'
         . ' left join categories g on l.category_id = g.id'
         . ' where l.winner_id is null'
         . ' order by l.date desc';
     $result = mysqli_query($db, $sql);
     if($result) {
-        $ads = mysqli_fetch_all($result, MYSQLI_ASSOC);
+        $lots = mysqli_fetch_all($result, MYSQLI_ASSOC);
     } else {
         print("Ошибка MySQL: " . mysqli_error($db));
     }
-    return $ads;
+    return $lots;
+}
+
+/**
+ * @param $db
+ * @param $lot_id
+ * @return array|null
+ */
+function getLotByIdFromDB($db, $lot_id) {
+    $sql = 'select l.id, l.name as title, l.description, l.image as url, l.price, l.date_end, g.name as category'
+        . ' from lots l'
+        . ' left join categories g on l.category_id = g.id'
+        . ' where l.id = ?';
+    $stmt = db_get_prepare_stmt($db, $sql, $lot_id);
+    $result_query = mysqli_stmt_execute($stmt);
+    if ($result_query !== false) {
+        $result_stmt = mysqli_stmt_get_result($stmt);
+        $lot = mysqli_fetch_all($result_stmt, MYSQLI_ASSOC);
+    }
+    return $lot;
 }
