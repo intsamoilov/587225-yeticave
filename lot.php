@@ -10,9 +10,13 @@ $categories = [];
 if(!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());
 } else {
-    $result_categories = getCategoriesFromDB($db);
-    $categories = $result_categories ? mysqli_fetch_all($result_categories, MYSQLI_ASSOC) :
-        print("Ошибка MySQL: " . mysqli_error($db));
+    try {
+        $categories = getAllCategories($db);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
+    }
+
     if (isset($_GET['id'])) {
         $lot = getLotByIdFromDB($db, [$_GET['id']]);
     } else {

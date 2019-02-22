@@ -22,13 +22,13 @@
             <div class="form__item <?php if($errors['category']) print('form__item--invalid');?>">
                 <label for="category">Категория</label>
                 <select id="category" name="category" <!--required-->
-                    <option>Выберите категорию</option>
-                    <?php foreach($categories as $value):?>
-                        <?php $categ = isset($lot['category']) ? $lot['category'] : '';?>
-                        <option <?php if($value['name'] == $categ) print(' selected');?>>
-                            <?=$value['name'];?>
-                        </option>
-                    <?php endforeach;?>
+                    <option value="0">Выберите категорию</option>
+                <?php foreach($categories as $category):?>
+                    <option value="<?=$category['id'];?>"
+                        <?=($category['id'] === $lot['category']) ? ' selected' : '';?>>
+                        <?=$category['name'];?>
+                    </option>
+                <?php endforeach;?>
                 </select>
                 <span class="form__error">Выберите категорию</span>
             </div>

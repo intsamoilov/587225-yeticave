@@ -8,14 +8,12 @@ $db = getDBConnection($db_config);
 if(!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());
 } else {
-    $result_categories = getCategoriesFromDB($db);
-    $result_lots = getLotsFromDB($db);
-    if ($result_categories && $result_lots) {
-        $categories = mysqli_fetch_all($result_categories, MYSQLI_ASSOC);
-        $lots = mysqli_fetch_all($result_lots, MYSQLI_ASSOC);
-    }
-    else {
-        print("Ошибка MySQL: " . mysqli_error($db));
+    try {
+        $categories = getAllCategories($db);
+        $lots = getNewestLots($db);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
     }
 }
 

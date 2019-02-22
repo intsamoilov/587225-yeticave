@@ -15,20 +15,23 @@ $dict = [
     'lot-date' => 'Дата окончания'
 ];
 $errors = [];
+$lot['category'] = 0;
 $db = getDBConnection($db_config);
 
 if (!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());
 } else {
-    $result_categories = getCategoriesFromDB($db);
-    $categories = $result_categories ? mysqli_fetch_all($result_categories, MYSQLI_ASSOC) :
-        print("Ошибка MySQL: " . mysqli_error($db));
+    try {
+        $categories = getAllCategories($db);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
+    }
 }
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $lot = $_POST;
     foreach ($required_fields as $field) {
-        if (empty($_POST[$field])) {
+        if (empty($lot[$field])) {
             $errors[$field] = 'Поле не заполнено!';
         }
     }
@@ -53,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } else {
         $errors['lot-img'] = 'Вы не загрузили файл!';
     }
-    if ($lot['category'] === 'Выберите категорию') {
+    $lot['category'] = (int)$lot['category'];
+    if ($lot['category'] === 0) {
         $errors['category'] = 'Категория не выбрана!';
     }
     if (count($errors)) {
@@ -64,11 +68,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'errors' => $errors
         ]);
     } else {
-        foreach ($categories as $category) {
-            if ($category['name'] === $lot['category']) {
-                $category_id = $category['id'];
-            }
-        }
         $sql = "insert into lots(name, description, image, price, date_end, bet_step, user_id, category_id)"
             . " values (?, ?, ?, ?, ?, ?, 1, ?)";
         $stmt = db_get_prepare_stmt($db, $sql, [
@@ -78,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $lot['lot-rate'],
             $lot['lot-date'],
             $lot['lot-step'],
-            $category_id
+            $lot['category']
         ]);
         $result = mysqli_stmt_execute($stmt);
         if ($result) {
@@ -89,7 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     $main_content = includeTemplate('add-lot.php', [
         'categories' => $categories,
-        'errors' => $errors
+        'errors' => $errors,
+        'lot' => $lot
     ]);
 }
 

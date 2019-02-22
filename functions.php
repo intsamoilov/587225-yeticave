@@ -62,28 +62,36 @@ function getRemainingTime($date_end) {
 
 /**
  * @param $db
- * @return bool|mysqli_result
+ * @return array|null
+ * @throws Exception
  */
-function getCategoriesFromDB($db) {
+function getAllCategories($db) {
     $sql = 'select id, name'
         . ' from categories'
         . ' order by id';
     $result = mysqli_query($db, $sql);
-    return $result;
+    if(!$result) {
+         throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 /**
  * @param $db
- * @return bool|mysqli_result
+ * @return array|null
+ * @throws Exception
  */
-function getLotsFromDB($db) {
+function getNewestLots($db) {
     $sql = 'select l.id, l.name as title, l.image as url, l.price, l.date_end, g.name as category'
         . ' from lots l'
         . ' left join categories g on l.category_id = g.id'
         . ' where l.winner_id is null'
         . ' order by l.date desc';
     $result = mysqli_query($db, $sql);
-    return $result;
+    if(!$result) {
+        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 /**
