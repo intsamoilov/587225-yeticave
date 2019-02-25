@@ -2,12 +2,19 @@
 require_once 'functions.php';
 require_once 'data.php';
 
+$lots = [];
+$categories = [];
 $db = getDBConnection($db_config);
-if($db) {
-    $categories = getCategoriesFromDB($db);
-    $lots = getLotsFromDB($db);
-} else {
+if(!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());
+} else {
+    try {
+        $categories = getAllCategories($db);
+        $lots = getNewestLots($db);
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        exit();
+    }
 }
 
 $main_content = includeTemplate('index.php', [
