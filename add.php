@@ -35,11 +35,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors[$field] = 'Поле не заполнено!';
         }
     }
-    if (!empty($lot['lot-rate']) && !filter_var($lot['lot-rate'], FILTER_VALIDATE_INT)) {
+    if (!empty($lot['lot-rate']) && !filter_var($lot['lot-rate'], FILTER_VALIDATE_FLOAT)) {
         $errors['lot-rate'] = 'Цена должна быть числом';
+    } else {
+        ($lot['lot-rate'] <= 0) ? $errors['lot-rate'] = 'Цена должна быть выше нуля' : '';
     }
-    if (!empty($lot['lot-step']) && !filter_var($lot['lot-step'], FILTER_VALIDATE_INT)) {
+    if (!empty($lot['lot-step']) && !filter_var($lot['lot-step'], FILTER_VALIDATE_FLOAT)) {
         $errors['lot-step'] = 'Ставка должна быть числом';
+    } else {
+        ($lot['lot-step'] <= 0) ? $errors['lot-step'] = 'Ставка должна быть выше нуля' : '';
     }
     if (isset($_FILES) && ($_FILES['lot-img']['error']) == 0) {
         $tmp_name = $_FILES['lot-img']['tmp_name'];
