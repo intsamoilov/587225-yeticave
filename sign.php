@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['email'] = 'Email должен быть действительным';
         } else {
             try {
-                if (isExistingEmail($db, $user['email'])) {
+                if (getUserByEmail($db, $user['email'])) {
                     $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
                 }
             } catch (Exception $e) {
