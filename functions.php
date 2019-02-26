@@ -112,3 +112,19 @@ function getLotByIdFromDB($db, $lot_id) {
     }
     return $lot;
 }
+
+/**
+ * @param $db
+ * @param $user_email
+ * @return bool
+ * @throws Exception
+ */
+function isExistingEmail($db, $user_email) {
+    $email = mysqli_real_escape_string($db, $user_email);
+    $sql = "SELECT id FROM users WHERE email = '$email'";
+    $result = mysqli_query($db, $sql);
+    if(!$result) {
+        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
+    return (mysqli_num_rows($result) > 0);
+}
