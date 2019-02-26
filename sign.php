@@ -48,12 +48,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!empty($user['email'])) {
         if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Email должен быть действительным';
-        }
-        $email = mysqli_real_escape_string($db, $user['email']);
-        $sql = "SELECT id FROM users WHERE email = '$email'";
-        $res = mysqli_query($db, $sql);
-        if (mysqli_num_rows($res) > 0) {
-            $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
+        } else {
+            try {
+                if (isExistingEmail($db, $user['email'])) {
+                    $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
+                }
+            } catch (Exception $e) {
+                echo $e->getMessage();
+                exit();
+            }
         }
     }
     if (count($errors)) {
