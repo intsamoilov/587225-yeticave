@@ -1,7 +1,7 @@
 <?php
-$is_auth = rand(0, 1);
-$title = 'Главная';
-$user_name = 'Александр Самойлов'; // укажите здесь ваше имя
+session_start();
+$is_auth = empty($_SESSION['user']) ? 0 : 1;
+$user_name = empty($_SESSION['user']) ? '' : $_SESSION['user'];
 $db_config = [
     'host' => '127.0.0.1',
     'user' => 'root',

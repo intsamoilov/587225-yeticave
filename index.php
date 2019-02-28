@@ -1,9 +1,9 @@
 <?php
 require_once 'functions.php';
 require_once 'data.php';
-
 $lots = [];
 $categories = [];
+$title = 'Главная';
 $db = getDBConnection($db_config);
 if(!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());

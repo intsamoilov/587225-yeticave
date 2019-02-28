@@ -35,6 +35,7 @@ if (isset($lot[0]['id'] )) {
 
 $main_content = includeTemplate($template_page, [
     'categories' => $categories,
+    'is_auth' => $is_auth,
     'lot' => $lot
 ]);
 

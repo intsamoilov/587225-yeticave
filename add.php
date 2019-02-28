@@ -17,6 +17,11 @@ $dict = [
 $errors = [];
 $lot['category'] = 0;
 $db = getDBConnection($db_config);
+if (!$is_auth) {
+    http_response_code('403');
+    print('Ошибка доступа: Требуется войти в свою учетную запись!');
+    exit;
+}
 
 if (!$db) {
     exit("Ошибка подключения: " . mysqli_connect_error());
@@ -87,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result) {
             $lot_id = mysqli_insert_id($db);
             header("Location: /lot.php?id=". $lot_id);
+            exit();
         }
     }
 } else {
