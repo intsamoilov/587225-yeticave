@@ -92,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result) {
             $lot_id = mysqli_insert_id($db);
             header("Location: /lot.php?id=". $lot_id);
+            exit();
         }
     }
 } else {
