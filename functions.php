@@ -1,6 +1,20 @@
 <?php
 require_once 'mysql_helper.php';
-date_default_timezone_set("Europe/Moscow");
+/**
+ * @param $date
+ * @return bool
+ */
+function check_date_format($date) {
+    $result = false;
+    $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
+    $regexp2 = '/(\d{4})\-(\d{2})\-(\d{2})/m';
+    if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
+        $result = checkdate($parts[2], $parts[1], $parts[3]);
+    } else if (preg_match($regexp2, $date, $parts) && count($parts) == 4) {
+        $result = checkdate($parts[2], $parts[3], $parts[1]);
+    }
+    return $result;
+}
 
 /**
  * @param $price
@@ -10,6 +24,43 @@ function formatPrice ($price) {
     $number = ceil($price);
     $number = number_format($number, 0, ',', ' ');
     return $number . ' ₽';
+}
+
+/**
+ * @param $number
+ * @param $dictionary
+ * @return mixed
+ */
+function declensionWords($number, $dictionary) {
+    $check = $number % 100;
+    $check = ($check > 19) ? $check % 10 : $check;
+    switch ($check) {
+        case 1: return $dictionary[0];
+        case 2:
+        case 3:
+        case 4: return $dictionary[1];
+        default: return $dictionary[2];
+    }
+}
+
+/**
+ * @param $date
+ * @return false|string
+ */
+function formatDate ($date) {
+    $bet_time = strtotime($date);
+    $minutes_result = ceil((strtotime('now') - $bet_time) / 60);
+    $hours_result = ceil((strtotime('now') - $bet_time) / 3600);
+    switch (true) {
+        case $minutes_result < 60:
+            return $minutes_result . declensionWords($minutes_result, [' минуту', ' минуты', ' минут'])
+                . ' назад';
+        case $hours_result < 24:
+            return ($hours_result) . declensionWords($hours_result, [' час', ' часа', ' часов'])
+                . ' назад';
+        default:
+            return date("d-m-y \в H:i", $bet_time);
+    }
 }
 
 /**
@@ -57,7 +108,23 @@ function getDBConnection($config) {
 function getRemainingTime($date_end) {
     $current_time = strtotime('now');
     $time_left = strtotime($date_end) - $current_time;
-    return gmdate('d H:i', $time_left);
+    $hours = floor($time_left / 3600);
+    $minutes = floor(($time_left % 3600) / 60);
+    return $hours . ':' .$minutes;
+}
+
+/**
+ * @param $db
+ * @param $sql
+ * @return array|null
+ * @throws Exception
+ */
+function getQueryResult($db, $sql) {
+    $result = mysqli_query($db, $sql);
+    if(!$result) {
+        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 /**
@@ -69,11 +136,7 @@ function getAllCategories($db) {
     $sql = 'select id, name'
         . ' from categories'
         . ' order by id';
-    $result = mysqli_query($db, $sql);
-    if(!$result) {
-         throw new Exception("Ошибка MySQL: " . mysqli_error($db));
-    }
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return getQueryResult($db, $sql);
 }
 
 /**
@@ -87,32 +150,17 @@ function getNewestLots($db) {
         . ' left join categories g on l.category_id = g.id'
         . ' where l.winner_id is null'
         . ' order by l.date desc';
-    $result = mysqli_query($db, $sql);
-    if(!$result) {
-        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
-    }
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return getQueryResult($db, $sql);
 }
 
-/**
- * @param $db
- * @param $lot_id
- * @return array|null
- */
 function getLotByIdFromDB($db, $lot_id) {
-    $sql = 'select l.id, l.name as title, l.description, l.image as url, l.price, l.date_end, g.name as category'
-        . ' from lots l'
-        . ' left join categories g on l.category_id = g.id'
-        . ' where l.id = ?';
-    $stmt = db_get_prepare_stmt($db, $sql, $lot_id);
-    $result_query = mysqli_stmt_execute($stmt);
-    if ($result_query !== false) {
-        $result_stmt = mysqli_stmt_get_result($stmt);
-        $lot = mysqli_fetch_all($result_stmt, MYSQLI_ASSOC);
-    }
-    return $lot;
+    $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
+        . " l.user_id, l.date_end, g.name as category"
+        . " from lots l"
+        . " left join categories g on l.category_id = g.id"
+        . " where l.id = '$lot_id'";
+    return getQueryResult($db, $sql);
 }
-
 /**
  * @param $db
  * @param $user_email
@@ -122,9 +170,37 @@ function getLotByIdFromDB($db, $lot_id) {
 function getUserByEmail($db, $user_email) {
     $email = mysqli_real_escape_string($db, $user_email);
     $sql = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($db, $sql);
-    if(!$result) {
-        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
-    }
-    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @param $user_id
+ * @param $lot_id
+ * @return array|null
+ * @throws Exception
+ */
+function getUserBetByLotId($db, $user_id, $lot_id) {
+    $sql = "SELECT * FROM bets WHERE user_id = '$user_id' and lot_id = '$lot_id'";
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @param $lot_id
+ * @return array|null
+ * @throws Exception
+ */
+function getBetsByLotId($db, $lot_id) {
+    $sql = "SELECT bets.date, bets.bid, users.name "
+        . " FROM bets LEFT JOIN users on bets.user_id = users.id"
+        . " WHERE bets.lot_id = '$lot_id' ORDER BY bets.date DESC";
+    return getQueryResult($db, $sql);
+}
+
+function debug($str) {
+    echo '<pre>';
+    var_dump($str);
+    echo '</pre>';
+    exit;
 }

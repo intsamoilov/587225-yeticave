@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['password'] = 'Вы ввели неверный пароль!';
         } else {
             $_SESSION['user'] = $user[0]['name'];
+            $_SESSION['user_id'] = $user[0]['id'];
             header("Location: index.php");
             exit();
         }

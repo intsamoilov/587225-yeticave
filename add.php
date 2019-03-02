@@ -69,6 +69,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($lot['category'] === 0) {
         $errors['category'] = 'Категория не выбрана!';
     }
+    if (!empty($lot['lot-date'])) {
+        if(!check_date_format($lot['lot-date'])) {
+            $errors['lot-date'] = 'Укажите дату в формате ДД.ММ.ГГГГ или ГГГГ-ММ-ДД';
+        }
+        $lot['lot-date'] = date("Y-m-d", strtotime($lot['lot-date']));
+        if (strtotime($lot['lot-date']) - strtotime('now') < 86400) {
+            $errors['lot-date'] = 'Укажите дату больше текущей, хотя бы на один день';
+        }
+    }
     if (count($errors)) {
         $main_content = includeTemplate('add-lot.php', [
             'categories' => $categories,
@@ -78,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         ]);
     } else {
         $sql = "insert into lots(name, description, image, price, date_end, bet_step, user_id, category_id)"
-            . " values (?, ?, ?, ?, ?, ?, 1, ?)";
+            . " values (?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = db_get_prepare_stmt($db, $sql, [
             $lot['lot-name'],
             $lot['message'],
@@ -86,6 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $lot['lot-rate'],
             $lot['lot-date'],
             $lot['lot-step'],
+            $_SESSION['user_id'],
             $lot['category']
         ]);
         $result = mysqli_stmt_execute($stmt);
