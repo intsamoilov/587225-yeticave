@@ -5,15 +5,8 @@ require_once 'mysql_helper.php';
  * @return bool
  */
 function check_date_format($date) {
-    $result = false;
-    $regexp = '/(\d{2})\.(\d{2})\.(\d{4})/m';
-    $regexp2 = '/(\d{4})\-(\d{2})\-(\d{2})/m';
-    if (preg_match($regexp, $date, $parts) && count($parts) == 4) {
-        $result = checkdate($parts[2], $parts[1], $parts[3]);
-    } else if (preg_match($regexp2, $date, $parts) && count($parts) == 4) {
-        $result = checkdate($parts[2], $parts[3], $parts[1]);
-    }
-    return $result;
+    $time_stamp = strtotime($date);
+    return ($date == date("Y-m-d", $time_stamp) || $date == date("d.m.Y", $time_stamp));
 }
 
 /**
@@ -153,7 +146,7 @@ function getNewestLots($db) {
     return getQueryResult($db, $sql);
 }
 
-function getLotByIdFromDB($db, $lot_id) {
+function getLotById($db, $lot_id) {
     $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
         . " l.user_id, l.date_end, g.name as category"
         . " from lots l"

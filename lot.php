@@ -28,7 +28,7 @@ if(!$db) {
 
     if (isset($_GET['id'])) {
         try {
-            $lot = getLotByIdFromDB($db, $_GET['id']);
+            $lot = getLotById($db, $_GET['id']);
         } catch (Exception $e) {
             echo $e->getMessage();
             exit();
