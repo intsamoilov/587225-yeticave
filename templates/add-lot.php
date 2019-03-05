@@ -71,7 +71,7 @@
             <div class="form__item <?php if($errors['lot-date']) print('form__item--invalid');?>">
                 <label for="lot-date">Дата окончания торгов</label>
                 <?php $value = isset($lot['lot-date']) ? $lot['lot-date'] : '';?>
-                <input class="form__input-date" id="lot-date" type="text" name="lot-date" value="<?=htmlspecialchars($value);?>" <!--required-->
+                <input class="form__input-date" id="lot-date" type="date" name="lot-date" value="<?=htmlspecialchars($value);?>" <!--required-->
                 <span class="form__error">Введите дату завершения торгов</span>
             </div>
         </div>
