@@ -16,27 +16,13 @@ $errors = [];
 $is_current_user = false;
 $is_already_betted = false;
 
-if(!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
+$categories = getAllCategories($db);
 
-    if (isset($_GET['id'])) {
-        try {
-            $lot = getLotById($db, $_GET['id']);
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            exit();
-        }
-    } else {
-        http_response_code(404);
-        exit();
-    }
+if (isset($_GET['id'])) {
+    $lot = getLotById($db, $_GET['id']);
+} else {
+    http_response_code(404);
+    die();
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -60,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $result = mysqli_stmt_execute($stmt);
         if ($result) {
             header("Location: /lot.php?id=". $lot[0]['id']);
-            exit();
+            die();
         }
     }
 }
@@ -75,22 +61,12 @@ if (isset($lot[0]['id'] )) {
 
 if (!empty($_SESSION['user_id'])) {
     $is_current_user = ($_SESSION['user_id'] == $lot[0]['user_id']);
-    try {
-        $is_already_betted = getUserBetByLotId($db, $_SESSION['user_id'], $lot[0]['id']);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
+    $is_already_betted = getUserBetByLotId($db, $_SESSION['user_id'], $lot[0]['id']);
 }
+
 $is_actual_date = strtotime('now') < strtotime($lot[0]['date_end']);
 $is_show = ($is_auth && !$is_current_user && $is_actual_date && !$is_already_betted);
-
-try {
-    $bets_list = getBetsByLotId($db, $lot[0]['id']);
-} catch (Exception $e) {
-    echo $e->getMessage();
-    exit();
-}
+$bets_list = getBetsByLotId($db, $lot[0]['id']);
 
 $main_content = includeTemplate($template_page, [
     'categories' => $categories,
@@ -110,4 +86,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);

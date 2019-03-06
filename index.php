@@ -5,17 +5,9 @@ $lots = [];
 $categories = [];
 $title = 'Главная';
 $db = getDBConnection($db_config);
-if(!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-        $lots = getNewestLots($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
-}
+
+$categories = getAllCategories($db);
+$lots = getNewestLots($db);
 
 $main_content = includeTemplate('index.php', [
     'categories' => $categories,
@@ -30,4 +22,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);

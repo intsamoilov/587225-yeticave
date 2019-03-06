@@ -81,6 +81,7 @@ function includeTemplate($name, $data) {
 /**
  * @param $config
  * @return mysqli
+ * @throws Exception
  */
 function getDBConnection($config) {
     $con = mysqli_init();
@@ -92,6 +93,9 @@ function getDBConnection($config) {
         $config['db_name']
     );
     mysqli_set_charset($con, "utf8");
+    if(!$con) {
+        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
     return $con;
 }
 

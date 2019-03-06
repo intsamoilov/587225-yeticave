@@ -13,16 +13,8 @@ $dict = [
 $errors = [];
 $db = getDBConnection($db_config);
 
-if (!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
-}
+$categories = getAllCategories($db);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $login_data = $_POST;
     foreach($required_fields as $field) {
@@ -41,12 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             'errors' => $errors
         ]);
     } else {
-        try {
-            $user = getUserByEmail($db, $login_data['email']);
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            exit();
-        }
+        $user = getUserByEmail($db, $login_data['email']);
         if (!$user) {
             $errors['email'] = 'Такого пользователя не существует!';
         } elseif (!password_verify($login_data['password'], $user[0]['password'])) {
@@ -55,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user'] = $user[0]['name'];
             $_SESSION['user_id'] = $user[0]['id'];
             header("Location: index.php");
-            exit();
+            die();
         }
     }
 }
@@ -75,4 +62,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);

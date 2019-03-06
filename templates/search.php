@@ -11,7 +11,7 @@
     <div class="container">
         <section class="lots">
             <h2>Результаты поиска по запросу «<span><?=htmlspecialchars($search_str);?></span>»</h2>
-            <?php $message ? print($message) : ''; ?>
+            <?=$message?>
             <ul class="lots__list">
                 <?php foreach($lots as $lot):?>
                     <li class="lots__item lot">
@@ -40,18 +40,18 @@
         <?php if($total_pages > 1): ?>
         <ul class="pagination-list">
             <li class="pagination-item pagination-item-prev">
-                <a href="<?php ($page_number == 1) ? print('#')
-                    : print("search.php?page=". ($page_number - 1) . "&search=" . $search_str);?>">
+                <a href="<?php ($page_number == 1) ? echo('#')
+                    : echo("search.php?page=". ($page_number - 1) . "&search=" . $search_str);?>">
                     Назад</a>
             </li>
             <?php foreach ($pages as $page): ?>
                 <li class="pagination-item
-                    <?php if($page == $page_number) print(' pagination-item-active');?>">
+                    <?php if($page == $page_number) echo(' pagination-item-active');?>">
                     <a href="search.php?page=<?=$page?>&search=<?=$search_str?>"><?=$page?></a></li>
             <?php endforeach; ?>
             <li class="pagination-item pagination-item-next">
-                <a href="<?php ($page_number == count($pages)) ? print('#')
-                    : print("search.php?page=". ($page_number + 1) . "&search=" . $search_str);?>">
+                <a href="<?php ($page_number == count($pages)) ? echo('#')
+                    : echo("search.php?page=". ($page_number + 1) . "&search=" . $search_str);?>">
                     Вперед</a>
             </li>
         </ul>

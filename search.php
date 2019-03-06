@@ -13,43 +13,26 @@ $page_number = 0;
 $total_pages = 0;
 $pages = [];
 
-if(!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
+$categories = getAllCategories($db);
 
-    if (!empty($_GET['search'])) {
-        $search_str = trim($_GET['search']);
-        try {
-            $total_lots = getTotalLotsBySearch($db, $search_str);
-            $total_lots = $total_lots[0]['count(*)'];
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            exit();
-        }
-        if(!$total_lots) {
-            $message = 'Ничего не найдено по вашему запросу';
-        } else {
-            $page_number = (empty($_GET['page'])) ? 1 : intval($_GET['page']);
-            $total_pages = intval(ceil($total_lots / $lots_by_page));
-            $offset = ($page_number - 1) * $lots_by_page;
-            $pages = range(1, $total_pages);
-            try {
-                $lots = getLotsBySearch($db, $search_str, $lots_by_page, $offset);
-            } catch (Exception $e) {
-                echo $e->getMessage();
-                exit();
-            }
-        }
-    } else {
+if (!empty($_GET['search'])) {
+    $search_str = trim($_GET['search']);
+    $total_lots = getTotalLotsBySearch($db, $search_str);
+    $total_lots = $total_lots[0]['count(*)'];
+
+    if(!$total_lots) {
         $message = 'Ничего не найдено по вашему запросу';
+    } else {
+        $page_number = (empty($_GET['page'])) ? 1 : intval($_GET['page']);
+        $total_pages = intval(ceil($total_lots / $lots_by_page));
+        $offset = ($page_number - 1) * $lots_by_page;
+        $pages = range(1, $total_pages);
+        $lots = getLotsBySearch($db, $search_str, $lots_by_page, $offset);
     }
+} else {
+    $message = 'Ничего не найдено по вашему запросу';
 }
+
 $main_content = includeTemplate('search.php', [
     'categories' => $categories,
     'search_str' => $search_str,
@@ -68,4 +51,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);
