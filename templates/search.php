@@ -40,8 +40,8 @@
         <?php if($total_pages > 1): ?>
         <ul class="pagination-list">
             <li class="pagination-item pagination-item-prev">
-                <a href="<?php ($page_number == 1) ? echo('#')
-                    : echo("search.php?page=". ($page_number - 1) . "&search=" . $search_str);?>">
+                <a href="<?php echo($page_number == 1) ? '#'
+                    : "search.php?page=". ($page_number - 1) . "&search=" . $search_str;?>">
                     Назад</a>
             </li>
             <?php foreach ($pages as $page): ?>
@@ -50,8 +50,8 @@
                     <a href="search.php?page=<?=$page?>&search=<?=$search_str?>"><?=$page?></a></li>
             <?php endforeach; ?>
             <li class="pagination-item pagination-item-next">
-                <a href="<?php ($page_number == count($pages)) ? echo('#')
-                    : echo("search.php?page=". ($page_number + 1) . "&search=" . $search_str);?>">
+                <a href="<?php echo($page_number == count($pages)) ? '#'
+                    : "search.php?page=". ($page_number + 1) . "&search=" . $search_str;?>">
                     Вперед</a>
             </li>
         </ul>
