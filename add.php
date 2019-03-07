@@ -19,20 +19,12 @@ $lot['category'] = 0;
 $db = getDBConnection($db_config);
 if (!$is_auth) {
     http_response_code('403');
-    print('Ошибка доступа: Требуется войти в свою учетную запись!');
-    exit;
+    echo('Ошибка доступа: Требуется войти в свою учетную запись!');
+    die();
 }
 
-if (!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
-}
+$categories = getAllCategories($db);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $lot = $_POST;
     foreach ($required_fields as $field) {
@@ -102,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($result) {
             $lot_id = mysqli_insert_id($db);
             header("Location: /lot.php?id=". $lot_id);
-            exit();
+            die();
         }
     }
 } else {
@@ -121,4 +113,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);

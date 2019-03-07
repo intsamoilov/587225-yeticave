@@ -15,16 +15,8 @@ $dict = [
 $errors = [];
 $db = getDBConnection($db_config);
 
-if (!$db) {
-    exit("Ошибка подключения: " . mysqli_connect_error());
-} else {
-    try {
-        $categories = getAllCategories($db);
-    } catch (Exception $e) {
-        echo $e->getMessage();
-        exit();
-    }
-}
+$categories = getAllCategories($db);
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = $_POST;
     foreach ($required_fields as $field) {
@@ -49,13 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = 'Email должен быть действительным';
         } else {
-            try {
-                if (getUserByEmail($db, $user['email'])) {
-                    $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
-                }
-            } catch (Exception $e) {
-                echo $e->getMessage();
-                exit();
+            if (getUserByEmail($db, $user['email'])) {
+                $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
             }
         }
     }
@@ -81,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $result = mysqli_stmt_execute($stmt);
         if ($result) {
             header("Location: login.php");
-            exit();
+            die();
         }
     }
 } else {
@@ -99,4 +86,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-print($layout);
+echo($layout);

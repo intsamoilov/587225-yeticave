@@ -44,3 +44,5 @@ create table users
     avatar   varchar(200),
     contact  varchar(200)
 );
+
+CREATE FULLTEXT INDEX search_by_lots ON lots(name, description);

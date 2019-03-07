@@ -1,6 +1,7 @@
 <?php
 require_once 'mysql_helper.php';
-/**
+
+/**require_once 'mysql_helper.php';
  * @param $date
  * @return bool
  */
@@ -80,6 +81,7 @@ function includeTemplate($name, $data) {
 /**
  * @param $config
  * @return mysqli
+ * @throws Exception
  */
 function getDBConnection($config) {
     $con = mysqli_init();
@@ -91,6 +93,9 @@ function getDBConnection($config) {
         $config['db_name']
     );
     mysqli_set_charset($con, "utf8");
+    if(!$con) {
+        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+    }
     return $con;
 }
 
@@ -142,10 +147,17 @@ function getNewestLots($db) {
         . ' from lots l'
         . ' left join categories g on l.category_id = g.id'
         . ' where l.winner_id is null'
-        . ' order by l.date desc';
+        . ' order by l.date desc'
+        . ' limit 9';
     return getQueryResult($db, $sql);
 }
 
+/**
+ * @param $db
+ * @param $lot_id
+ * @return array|null
+ * @throws Exception
+ */
 function getLotById($db, $lot_id) {
     $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
         . " l.user_id, l.date_end, g.name as category"
@@ -154,6 +166,39 @@ function getLotById($db, $lot_id) {
         . " where l.id = '$lot_id'";
     return getQueryResult($db, $sql);
 }
+
+/**
+ * @param $db
+ * @param $search_words
+ * @return array|null
+ * @throws Exception
+ */
+function getTotalLotsBySearch($db, $search_words) {
+    $sql = "select count(*)"
+        . " from lots l"
+        . " where match(l.name, l.description) against('$search_words') and l.winner_id is null";
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @param $search_words
+ * @param $lots_by_page
+ * @param $offset
+ * @return array|null
+ * @throws Exception
+ */
+function getLotsBySearch($db, $search_words, $lots_by_page, $offset) {
+    $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
+        . " l.user_id, l.date_end, g.name as category"
+        . " from lots l"
+        . " left join categories g on l.category_id = g.id"
+        . " where match(l.name, l.description) against('$search_words') and l.winner_id is null"
+        . " order by l.date desc"
+        . " limit " . $lots_by_page . " offset " . $offset . "";
+    return getQueryResult($db, $sql);
+}
+
 /**
  * @param $db
  * @param $user_email
@@ -189,11 +234,4 @@ function getBetsByLotId($db, $lot_id) {
         . " FROM bets LEFT JOIN users on bets.user_id = users.id"
         . " WHERE bets.lot_id = '$lot_id' ORDER BY bets.date DESC";
     return getQueryResult($db, $sql);
-}
-
-function debug($str) {
-    echo '<pre>';
-    var_dump($str);
-    echo '</pre>';
-    exit;
 }
