@@ -3,7 +3,7 @@
         <ul class="nav__list container">
             <?php foreach($categories as $category):?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=htmlspecialchars($category['name']);?></a>
+                <a href="all-lots.php?id=<?=$category['id']?>"><?=htmlspecialchars($category['name']);?></a>
             </li>
             <?php endforeach;?>
         </ul>
@@ -46,7 +46,7 @@
             </li>
             <?php foreach ($pages as $page): ?>
                 <li class="pagination-item
-                    <?php if($page == $page_number) echo(' pagination-item-active');?>">
+                    <?php if($page == $page_number) echo' pagination-item-active';?>">
                     <a href="search.php?page=<?=$page?>&search=<?=$search_str?>"><?=$page?></a></li>
             <?php endforeach; ?>
             <li class="pagination-item pagination-item-next">

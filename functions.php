@@ -1,5 +1,6 @@
 <?php
 require_once 'mysql_helper.php';
+require_once 'vendor/autoload.php';
 
 /**require_once 'mysql_helper.php';
  * @param $date
@@ -94,7 +95,7 @@ function getDBConnection($config) {
     );
     mysqli_set_charset($con, "utf8");
     if(!$con) {
-        throw new Exception("Ошибка MySQL: " . mysqli_error($db));
+        throw new Exception("Ошибка MySQL: " . mysqli_error($con));
     }
     return $con;
 }
@@ -182,6 +183,37 @@ function getTotalLotsBySearch($db, $search_words) {
 
 /**
  * @param $db
+ * @param $category_id
+ * @return array|null
+ * @throws Exception
+ */
+function getTotalLotsByCategory($db, $category_id) {
+    $sql = "select count(*)"
+        . " from lots l"
+        . " where l.category_id = '$category_id' and l.winner_id is null";
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @param $category_id
+ * @param $lots_by_page
+ * @param $offset
+ * @return array|null
+ * @throws Exception
+ */
+function getLotsByCategory($db, $category_id, $lots_by_page, $offset) {
+    $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
+        . " l.user_id, l.date_end, g.name as category"
+        . " from lots l"
+        . " left join categories g on l.category_id = g.id"
+        . " where l.category_id = '$category_id' and l.winner_id is null"
+        . " order by l.date desc"
+        . " limit " . $lots_by_page . " offset " . $offset . "";
+    return getQueryResult($db, $sql);
+}
+/**
+ * @param $db
  * @param $search_words
  * @param $lots_by_page
  * @param $offset
@@ -225,13 +257,51 @@ function getUserBetByLotId($db, $user_id, $lot_id) {
 
 /**
  * @param $db
+ * @param $category_id
+ * @return array|null
+ * @throws Exception
+ */
+function getCategoryById($db, $category_id) {
+    $sql = "SELECT name"
+        . " FROM categories"
+        . " WHERE id = '$category_id'";
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @param $user_id
+ * @return array|null
+ * @throws Exception
+ */
+function getRatesByUserId($db, $user_id) {
+    $sql = "select b.date, b.bid, l.id, l.name, l.image, l.date_end, g.name as category, l.winner_id, u.contact"
+        . " from bets b left join lots l on b.lot_id = l.id left join categories g on l.category_id = g.id"
+        . " left join users u on l.user_id = u.id"
+        . " where b.user_id = '$user_id' order by b.date desc";
+    return getQueryResult($db, $sql);
+}
+/**
+ * @param $db
  * @param $lot_id
  * @return array|null
  * @throws Exception
  */
 function getBetsByLotId($db, $lot_id) {
-    $sql = "SELECT bets.date, bets.bid, users.name "
+    $sql = "SELECT bets.date, bets.bid, bets.user_id, users.name, users.email "
         . " FROM bets LEFT JOIN users on bets.user_id = users.id"
         . " WHERE bets.lot_id = '$lot_id' ORDER BY bets.date DESC";
+    return getQueryResult($db, $sql);
+}
+
+/**
+ * @param $db
+ * @return array|null
+ * @throws Exception
+ */
+function getEndedLots($db) {
+    $sql = "SELECT l.id, l.date_end, l.winner_id, l.name"
+        . " FROM lots l"
+        . " WHERE l.winner_id is null";
     return getQueryResult($db, $sql);
 }

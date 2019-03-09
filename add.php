@@ -19,7 +19,7 @@ $lot['category'] = 0;
 $db = getDBConnection($db_config);
 if (!$is_auth) {
     http_response_code('403');
-    echo('Ошибка доступа: Требуется войти в свою учетную запись!');
+    echo'Ошибка доступа: Требуется войти в свою учетную запись!';
     die();
 }
 
@@ -113,4 +113,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-echo($layout);
+echo $layout;

@@ -27,6 +27,7 @@
         <?php if($is_auth): ?>
             <div class="user-menu__logged">
                 <p><?=htmlspecialchars($user_name); ?></p>
+                <a href="my-rates.php">Мои ставки</a>&nbsp;&nbsp;
                 <a href="logout.php">Выйти</a>
             </div>
         <?php else: ?>
@@ -51,7 +52,7 @@
             <!--заполните этот список из массива категорий-->
             <?php foreach($categories as $category):?>
             <li class="nav__item">
-                <a href="pages/all-lots.html"><?=htmlspecialchars($category['name']);?></a>
+                <a href="all-lots.php?id=<?=$category['id']?>"><?=htmlspecialchars($category['name']);?></a>
             </li>
             <?php endforeach;?>
         </ul>

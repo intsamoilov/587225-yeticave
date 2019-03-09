@@ -1,6 +1,8 @@
 <?php
 require_once 'functions.php';
 require_once 'data.php';
+require_once 'winner.php';
+
 $lots = [];
 $categories = [];
 $title = 'Главная';
@@ -22,4 +24,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-echo($layout);
+echo $layout;
