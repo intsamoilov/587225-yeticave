@@ -3,22 +3,24 @@ require_once 'functions.php';
 require_once 'data.php';
 
 $db = getDBConnection($db_config);
-$title = 'Результаты поиска';
+$title = 'Категория';
 $lots = [];
-$search_str = '';
+$category_id = 0;
 $total_lots = 0;
 $categories = [];
 $message = '';
 $page_number = 0;
 $total_pages = 0;
 $pages = [];
-
+$category_name = '';
 $categories = getAllCategories($db);
 
-if (!empty($_GET['search'])) {
-    $search_str = trim($_GET['search']);
-    $total_lots = getTotalLotsBySearch($db, $search_str);
+if (!empty($_GET['id'])) {
+    $category_id = $_GET['id'];
+    $total_lots = getTotalLotsByCategory($db, $category_id);
     $total_lots = $total_lots[0]['count(*)'];
+    $category_name = getCategoryById($db, $category_id);
+    $title = 'Все лоты в категории ' . $category_name[0]['name'];
 
     if(!$total_lots) {
         $message = 'Ничего не найдено по вашему запросу';
@@ -27,20 +29,19 @@ if (!empty($_GET['search'])) {
         $total_pages = intval(ceil($total_lots / $lots_by_page));
         $offset = ($page_number - 1) * $lots_by_page;
         $pages = range(1, $total_pages);
-        $lots = getLotsBySearch($db, $search_str, $lots_by_page, $offset);
+        $lots = getLotsByCategory($db, $category_id, $lots_by_page, $offset);
     }
-} else {
-    $message = 'Ничего не найдено по вашему запросу';
 }
 
-$main_content = includeTemplate('search.php', [
+$main_content = includeTemplate('all-lots.php', [
     'categories' => $categories,
-    'search_str' => $search_str,
+    'category_id' => $category_id,
     'lots' => $lots,
     'message' => $message,
     'page_number' => $page_number,
     'total_pages' => $total_pages,
-    'pages' => $pages
+    'pages' => $pages,
+    'category_name' => $category_name[0]['name']
 ]);
 
 $layout = includeTemplate('layout.php', [

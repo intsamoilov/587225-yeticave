@@ -62,4 +62,4 @@ $layout = includeTemplate('layout.php', [
     'main_content' => $main_content
 ]);
 
-echo($layout);
+echo $layout;

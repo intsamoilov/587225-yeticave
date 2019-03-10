@@ -2,7 +2,7 @@
     <ul class="nav__list container">
         <?php foreach($categories as $category):?>
         <li class="nav__item">
-            <a href="all-lots.html"><?=htmlspecialchars($category['name']);?></a>
+            <a href="all-lots.php?id=<?=$category['id']?>"><?=htmlspecialchars($category['name']);?></a>
         </li>
         <?php endforeach;?>
     </ul>
@@ -32,11 +32,11 @@
                         Мин. ставка <span><?=htmlspecialchars($lot['price'] + $lot['bet_step']);?></span>
                     </div>
                 </div>
-                <form class="lot-item__form <?php if(count($errors)) echo('form--invalid');?>"
+                <form class="lot-item__form <?php if(count($errors)) echo'form--invalid';?>"
                       action="lot.php?id=<?=$lot['id'];?>"
                       method="post" enctype="multipart/form-data">
                     <p class="lot-item__form-item form__item
-                        <?php if($errors['cost']) echo('form__item--invalid');?>">
+                        <?php if($errors['cost']) echo'form__item--invalid';?>">
                         <?php $value = isset($bet['cost']) ? $bet['cost'] : '';?>
                         <label for="cost">Ваша ставка</label>
                         <input id="cost" type="text" name="cost" placeholder="12 000" value="<?=$value;?>">
