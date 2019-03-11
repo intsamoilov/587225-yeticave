@@ -13,23 +13,25 @@ foreach ($ended_lots as $lot) {
         $stmt = mysqli_prepare($db, $sql);
         mysqli_stmt_execute($stmt);
 
-        $page = includeTemplate('email.php', [
-            'user_name' => $bets[0]['name'],
-            'lot_name' => $lot['name'],
-            'lot_id' => $lot['id']
-        ]);
+        if ($winner_id != 0) {
+            $page = includeTemplate('email.php', [
+                'user_name' => $bets[0]['name'],
+                'lot_name' => $lot['name'],
+                'lot_id' => $lot['id']
+            ]);
 
-        $transport = new Swift_SmtpTransport('phpdemo.ru', 25);
-        $transport ->setUsername('keks@phpdemo.ru');
-        $transport ->setPassword('htmlacademy');
+            $transport = new Swift_SmtpTransport('phpdemo.ru', 25);
+            $transport ->setUsername('keks@phpdemo.ru');
+            $transport ->setPassword('htmlacademy');
 
-        $message = new Swift_Message('Ваша ставка победила');
-        $message -> setFrom('keks@phpdemo.ru');
-        $message -> setTo($bets[0]['email']);
-        $message -> addPart($page, 'text/html');
+            $message = new Swift_Message('Ваша ставка победила');
+            $message -> setFrom('keks@phpdemo.ru');
+            $message -> setTo($bets[0]['email']);
+            $message -> addPart($page, 'text/html');
 
-        $mailer = new Swift_Mailer($transport);
-        $mailer -> send($message);
+            $mailer = new Swift_Mailer($transport);
+            $mailer -> send($message);
+        }
     }
 }
 

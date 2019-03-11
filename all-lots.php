@@ -16,7 +16,7 @@ $category_name = '';
 $categories = getAllCategories($db);
 
 if (!empty($_GET['id'])) {
-    $category_id = $_GET['id'];
+    $category_id = (int)$_GET['id'];
     $total_lots = getTotalLotsByCategory($db, $category_id);
     $total_lots = $total_lots[0]['count(*)'];
     $category_name = getCategoryById($db, $category_id);

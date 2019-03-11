@@ -19,7 +19,7 @@ $is_already_betted = false;
 $categories = getAllCategories($db);
 
 if (isset($_GET['id'])) {
-    $lot = getLotById($db, $_GET['id']);
+    $lot = getLotById($db, (int)$_GET['id']);
 } else {
     http_response_code(404);
     die();

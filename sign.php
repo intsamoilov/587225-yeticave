@@ -13,6 +13,7 @@ $dict = [
     'avatar' => 'Аватар'
 ];
 $errors = [];
+$main_content = '';
 $db = getDBConnection($db_config);
 
 $categories = getAllCategories($db);

@@ -2,7 +2,7 @@
 require_once 'mysql_helper.php';
 require_once 'vendor/autoload.php';
 
-/**require_once 'mysql_helper.php';
+/**
  * @param $date
  * @return bool
  */
@@ -132,7 +132,7 @@ function getQueryResult($db, $sql) {
  * @throws Exception
  */
 function getAllCategories($db) {
-    $sql = 'select id, name'
+    $sql = 'select id, name, class'
         . ' from categories'
         . ' order by id';
     return getQueryResult($db, $sql);
@@ -160,6 +160,7 @@ function getNewestLots($db) {
  * @throws Exception
  */
 function getLotById($db, $lot_id) {
+    $lot_id = mysqli_real_escape_string($db, $lot_id);
     $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
         . " l.user_id, l.date_end, g.name as category"
         . " from lots l"
@@ -175,6 +176,7 @@ function getLotById($db, $lot_id) {
  * @throws Exception
  */
 function getTotalLotsBySearch($db, $search_words) {
+    $search_words = mysqli_real_escape_string($db, $search_words);
     $sql = "select count(*)"
         . " from lots l"
         . " where match(l.name, l.description) against('$search_words') and l.winner_id is null";
@@ -188,6 +190,7 @@ function getTotalLotsBySearch($db, $search_words) {
  * @throws Exception
  */
 function getTotalLotsByCategory($db, $category_id) {
+    $category_id = mysqli_real_escape_string($db, $category_id);
     $sql = "select count(*)"
         . " from lots l"
         . " where l.category_id = '$category_id' and l.winner_id is null";
@@ -203,6 +206,9 @@ function getTotalLotsByCategory($db, $category_id) {
  * @throws Exception
  */
 function getLotsByCategory($db, $category_id, $lots_by_page, $offset) {
+    $category_id = mysqli_real_escape_string($db, $category_id);
+    $lots_by_page = mysqli_real_escape_string($db, $lots_by_page);
+    $offset = mysqli_real_escape_string($db, $offset);
     $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
         . " l.user_id, l.date_end, g.name as category"
         . " from lots l"
@@ -221,6 +227,9 @@ function getLotsByCategory($db, $category_id, $lots_by_page, $offset) {
  * @throws Exception
  */
 function getLotsBySearch($db, $search_words, $lots_by_page, $offset) {
+    $search_words = mysqli_real_escape_string($db, $search_words);
+    $lots_by_page = mysqli_real_escape_string($db, $lots_by_page);
+    $offset = mysqli_real_escape_string($db, $offset);
     $sql = "select l.id, l.name as title, l.description, l.image as url, l.price, l.bet_step,"
         . " l.user_id, l.date_end, g.name as category"
         . " from lots l"
@@ -251,6 +260,8 @@ function getUserByEmail($db, $user_email) {
  * @throws Exception
  */
 function getUserBetByLotId($db, $user_id, $lot_id) {
+    $user_id = mysqli_real_escape_string($db, $user_id);
+    $lot_id = mysqli_real_escape_string($db, $lot_id);
     $sql = "SELECT * FROM bets WHERE user_id = '$user_id' and lot_id = '$lot_id'";
     return getQueryResult($db, $sql);
 }
@@ -262,6 +273,7 @@ function getUserBetByLotId($db, $user_id, $lot_id) {
  * @throws Exception
  */
 function getCategoryById($db, $category_id) {
+    $category_id = mysqli_real_escape_string($db, $category_id);
     $sql = "SELECT name"
         . " FROM categories"
         . " WHERE id = '$category_id'";
@@ -275,6 +287,7 @@ function getCategoryById($db, $category_id) {
  * @throws Exception
  */
 function getRatesByUserId($db, $user_id) {
+    $user_id = mysqli_real_escape_string($db, $user_id);
     $sql = "select b.date, b.bid, l.id, l.name, l.image, l.date_end, g.name as category, l.winner_id, u.contact"
         . " from bets b left join lots l on b.lot_id = l.id left join categories g on l.category_id = g.id"
         . " left join users u on l.user_id = u.id"
@@ -288,6 +301,7 @@ function getRatesByUserId($db, $user_id) {
  * @throws Exception
  */
 function getBetsByLotId($db, $lot_id) {
+    $lot_id = mysqli_real_escape_string($db, $lot_id);
     $sql = "SELECT bets.date, bets.bid, bets.user_id, users.name, users.email "
         . " FROM bets LEFT JOIN users on bets.user_id = users.id"
         . " WHERE bets.lot_id = '$lot_id' ORDER BY bets.date DESC";

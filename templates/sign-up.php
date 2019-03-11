@@ -11,28 +11,28 @@
     <form class="form container <?php if(count($errors)) echo'form--invalid';?>"
           action="sign.php" method="post" enctype="multipart/form-data">
         <h2>Регистрация нового аккаунта</h2>
-        <div class="form__item <?php if($errors['email']) echo'form__item--invalid';?>">
+        <div class="form__item <?php if(isset($errors['email'])) echo'form__item--invalid';?>">
             <label for="email">E-mail*</label>
             <?php $value = isset($user['email']) ? $user['email'] : '';?>
             <input id="email" type="text" name="email" placeholder="Введите e-mail"
                    value="<?=htmlspecialchars($value);?>">
             <span class="form__error">Введите e-mail</span>
         </div>
-        <div class="form__item <?php if($errors['password']) echo'form__item--invalid';?>">
+        <div class="form__item <?php if(isset($errors['password'])) echo'form__item--invalid';?>">
             <label for="password">Пароль*</label>
             <?php $value = isset($user['password']) ? $user['password'] : '';?>
             <input id="password" type="password" name="password" placeholder="Введите пароль"
                    value="<?=htmlspecialchars($value);?>">
             <span class="form__error">Введите пароль</span>
         </div>
-        <div class="form__item <?php if($errors['name']) echo'form__item--invalid';?>">
+        <div class="form__item <?php if(isset($errors['name'])) echo'form__item--invalid';?>">
             <label for="name">Имя*</label>
             <?php $value = isset($user['name']) ? $user['name'] : '';?>
             <input id="name" type="text" name="name" placeholder="Введите имя"
                    value="<?=htmlspecialchars($value);?>">
             <span class="form__error">Введите имя</span>
         </div>
-        <div class="form__item <?php if($errors['message']) echo'form__item--invalid';?>">
+        <div class="form__item <?php if(isset($errors['message'])) echo'form__item--invalid';?>">
             <label for="message">Контактные данные*</label>
             <?php $value = isset($user['message']) ? $user['message'] : '';?>
             <textarea id="message" name="message"
